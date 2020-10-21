@@ -1,0 +1,8 @@
+{
+    "name": "colony test workflow",
+    "description": "colony test workflow",
+    "iconName": "example-icon",
+    "categories": [
+        "Colony"
+    ]
+}
