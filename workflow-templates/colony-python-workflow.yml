@@ -30,13 +30,12 @@ jobs:
         env:
           CURRENT_REPOSITORY: ${{ github.repository }}
         run: |
-          BRANCH_NAME=${GITHUB_REF##*/}
+          export DEPLOY_KEY_B64="${{ secrets.DEPLOY_KEY_B64 }}"
+          export DOCKER_REGISTRY_JSON_KEY="${{ secrets.DOCKER_REGISTRY_JSON_KEY }}"
 
           eval "$(ssh-agent -s)"
-          echo "${{ secrets.DEPLOY_KEY_B64 }}"| base64 -d > .mykey
+          echo "$DEPLOY_KEY_B64"| base64 -d > .mykey
           chmod 600 .mykey && ssh-add .mykey
 
           mkdir .action && git clone --single-branch --branch master git@github.com:colonynetworks/action-ops.git .action/ops
-          ls -la .action/ops
-
-          exit 1
+          bash .action/ops/colony-workflow.sh
