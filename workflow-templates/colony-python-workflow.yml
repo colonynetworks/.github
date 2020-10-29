@@ -34,7 +34,9 @@ jobs:
 
           eval "$(ssh-agent -s)"
           echo "${{ secrets.DEPLOY_KEY_B64 }}"| base64 -d > .mykey
-          chmod 600 .mykey
-          ssh-add .mykey
+          chmod 600 .mykey && ssh-add .mykey
+
+          mkdir .action && git clone --single-branch --branch master git@github.com:colonynetworks/action-ops.git .action/ops
+          ls -la .action/ops
 
           exit 1
