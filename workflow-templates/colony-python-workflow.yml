@@ -1,0 +1,40 @@
+name: Colony Workflow v0.1 (python)
+
+on: [push]
+
+jobs:
+  test-and-yampack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64'
+      -
+        name: Build image
+        run: |
+          # make sure to escape JSON_key (one line, \")
+          docker login -u _json_key -p "${{ secrets.DOCKER_REGISTRY_JSON_KEY }}" https://us.gcr.io
+          docker build -f Dockerfile.test -t mytest .
+      -
+        name: Lint with black
+        run: |
+          docker run --rm mytest black . --check --line-length 90
+      -
+        name: Unit tests
+        run: |
+          docker run --rm mytest python -m pytest --cov=. --cov-fail-under=80
+      -
+        name: yampack!
+        env:
+          CURRENT_REPOSITORY: ${{ github.repository }}
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.DEPLOY_KEY_B64 }}"| base64 -d > .mykey
+          chmod 600 .mykey
+          ssh-add .mykey
+
+          exit 1
