@@ -1,0 +1,9 @@
+{
+    "name": "Colony Workflow v0.1 (python)",
+    "description": "Lint, test, and yampack",
+    "iconName": "colony",
+    "categories": [
+        "Colony",
+        "python"
+    ]
+}
